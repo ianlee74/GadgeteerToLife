@@ -19,6 +19,8 @@ namespace JoeTheGadgeteer {
         
         private Gadgeteer.Modules.GHIElectronics.Breakout lowerServos;
         
+        private Gadgeteer.Modules.Seeed.TemperatureHumidity temperatureHumidity;
+        
         public static void Main() {
             // Important to initialize the Mainboard first
             Program.Mainboard = new GHIElectronics.Gadgeteer.FEZCerberus();
@@ -30,6 +32,7 @@ namespace JoeTheGadgeteer {
         }
         
         private void InitializeModules() {
+            this.temperatureHumidity = new GTM.Seeed.TemperatureHumidity(2);
             this.lowerServos = new GTM.GHIElectronics.Breakout(3);
             this.upperServos = new GTM.GHIElectronics.Breakout(4);
         }
