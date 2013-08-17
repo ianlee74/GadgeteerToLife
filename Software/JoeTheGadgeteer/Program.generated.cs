@@ -23,6 +23,8 @@ namespace JoeTheGadgeteer {
         
         private Gadgeteer.Modules.GHIElectronics.ColorSense colorSensor;
         
+        private Gadgeteer.Modules.GHIElectronics.Distance_US3 distanceSensor;
+        
         public static void Main() {
             // Important to initialize the Mainboard first
             Program.Mainboard = new GHIElectronics.Gadgeteer.FEZCerberus();
@@ -38,6 +40,7 @@ namespace JoeTheGadgeteer {
             this.lowerServos = new GTM.GHIElectronics.Breakout(3);
             this.upperServos = new GTM.GHIElectronics.Breakout(4);
             this.colorSensor = new GTM.GHIElectronics.ColorSense(5);
+            this.distanceSensor = new GTM.GHIElectronics.Distance_US3(7);
         }
     }
 }

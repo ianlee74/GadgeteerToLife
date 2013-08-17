@@ -36,14 +36,53 @@ namespace JoeTheGadgeteer
             _leftLegServoPwm = lowerServos.SetupPWMOutput(GT.Socket.Pin.Seven);
 
             // Create Joe and make him exercise all his body parts.
-            _joe = new Human(_heartPin, _leftArmServoPwm, _rightArmServoPwm, _leftLegServoPwm, _rightLegServoPwm, _headServoPwm);
+            _joe = new Human(_heartPin, _leftArmServoPwm, _rightArmServoPwm, _leftLegServoPwm, _rightLegServoPwm, _headServoPwm, distanceSensor);
             _joe.StandAtAttention();
 
             temperatureHumidity.MeasurementComplete += temperatureHumidity_MeasurementComplete;
 
-            DoWork();
+            StartScanningForBoss();
         }
 
+        /// <summary>
+        /// Visually scan the area for your boss and do work when you see him.
+        /// Otherwise, slack off.
+        /// </summary>
+        private void StartScanningForBoss()
+        {
+            _joe.VisualObjectLocated += (o, d) =>
+            {
+                Debug.Print("Visual object located (" + d + ")");
+                DoWork();
+            };
+            _joe.VisualObjectLost += (o, d) =>
+            {
+                Debug.Print("Visual object lost (" + d + ")");
+                SlackOff();
+            };
+            _joe.StartVisualObjectScan();
+        }
+
+        /// <summary>
+        /// Don't do the work your boss asked you to do.
+        /// </summary>
+        void SlackOff()
+        {
+            if (_tempHumidityTimer != null && _tempHumidityTimer.IsRunning)
+            {
+                _tempHumidityTimer.Stop();
+            }
+
+            if (_colorSensorTimer != null && _colorSensorTimer.IsRunning)
+            {
+                _colorSensorTimer.Stop();
+            }
+            _joe.StandAtAttention(true);
+        }
+
+        /// <summary>
+        /// Do the work your boss asked you to do.
+        /// </summary>
         void DoWork()
         {
             MonitorTemperatureAndHumidity();
