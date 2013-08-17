@@ -21,6 +21,8 @@ namespace JoeTheGadgeteer {
         
         private Gadgeteer.Modules.Seeed.TemperatureHumidity temperatureHumidity;
         
+        private Gadgeteer.Modules.GHIElectronics.ColorSense colorSensor;
+        
         public static void Main() {
             // Important to initialize the Mainboard first
             Program.Mainboard = new GHIElectronics.Gadgeteer.FEZCerberus();
@@ -35,6 +37,7 @@ namespace JoeTheGadgeteer {
             this.temperatureHumidity = new GTM.Seeed.TemperatureHumidity(2);
             this.lowerServos = new GTM.GHIElectronics.Breakout(3);
             this.upperServos = new GTM.GHIElectronics.Breakout(4);
+            this.colorSensor = new GTM.GHIElectronics.ColorSense(5);
         }
     }
 }

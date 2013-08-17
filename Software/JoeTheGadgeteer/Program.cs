@@ -1,4 +1,6 @@
-﻿using Microsoft.SPOT;
+﻿using System.Threading;
+using Gadgeteer.Modules.GHIElectronics;
+using Microsoft.SPOT;
 using GT = Gadgeteer;
 using GTI = Gadgeteer.Interfaces;
 using GTM = Gadgeteer.Modules;
@@ -18,6 +20,8 @@ namespace JoeTheGadgeteer
         private GT.Timer _tempHumidityTimer;
         private int _tempPos;
         private int _humidityPos;
+
+        private GT.Timer _colorSensorTimer;
 
         void ProgramStarted()
         {
@@ -43,6 +47,53 @@ namespace JoeTheGadgeteer
         void DoWork()
         {
             MonitorTemperatureAndHumidity();
+            MonitorColor();
+        }
+
+        private void MonitorColor()
+        {
+            ColorSense.ColorChannels color;
+
+            if (_colorSensorTimer == null)
+            {
+                _colorSensorTimer = new GT.Timer(1000);
+                _colorSensorTimer.Tick += t =>
+                {
+                    // Take a color reading.
+                    colorSensor.ToggleOnboardLED(true);
+                    Thread.Sleep(200);
+                    color = colorSensor.ReadColorChannels();
+                    colorSensor.ToggleOnboardLED(false);
+                    Debug.Print("R: " + color.Red + "  G: " + color.Green + "  B: " + color.Blue);
+
+                    // Raise left leg if the color is (mostly) blue.
+                    if (color.Blue > color.Red && color.Blue > color.Green & color.Blue > 50)
+                    {
+                        if (_joe.LeftLeg.CurrentPosition != _joe.LeftLeg.MinPosition)
+                        {
+                            _joe.LeftLeg.Move(_joe.LeftLeg.MinPosition);
+                        }
+                    }
+                    else if (_joe.LeftLeg.CurrentPosition != _joe.LeftLeg.RestPosition)
+                    {
+                        _joe.LeftLeg.Move(_joe.LeftLeg.RestPosition);
+                    }
+
+                    // Raise right leg if the color is (mostly) red.
+                    if (color.Red > color.Blue && color.Red > color.Green && color.Red > 50)
+                    {
+                        if (_joe.RightLeg.CurrentPosition != _joe.RightLeg.MaxPosition)
+                        {
+                            _joe.RightLeg.Move(_joe.RightLeg.MaxPosition);
+                        }
+                    }
+                    else if (_joe.RightLeg.CurrentPosition != _joe.RightLeg.RestPosition)
+                    {
+                        _joe.RightLeg.Move(_joe.RightLeg.RestPosition);
+                    }
+                };
+            }
+            if (!_colorSensorTimer.IsRunning) _colorSensorTimer.Start();
         }
 
         /// <summary>
