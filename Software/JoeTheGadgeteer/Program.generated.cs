@@ -17,6 +17,8 @@ namespace JoeTheGadgeteer {
         
         private Gadgeteer.Modules.GHIElectronics.Breakout upperServos;
         
+        private Gadgeteer.Modules.GHIElectronics.Breakout lowerServos;
+        
         public static void Main() {
             // Important to initialize the Mainboard first
             Program.Mainboard = new GHIElectronics.Gadgeteer.FEZCerberus();
@@ -28,6 +30,7 @@ namespace JoeTheGadgeteer {
         }
         
         private void InitializeModules() {
+            this.lowerServos = new GTM.GHIElectronics.Breakout(3);
             this.upperServos = new GTM.GHIElectronics.Breakout(4);
         }
     }
