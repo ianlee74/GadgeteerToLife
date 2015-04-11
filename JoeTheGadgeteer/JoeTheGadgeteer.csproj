@@ -39,6 +39,7 @@
   <!-- Everything below here is custom to .NET MF / Gadgeteer template-->
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
+    <Compile Include="Human.cs" />
     <Compile Include="MovingBodyPart.cs" />
     <Compile Include="Program.generated.cs">
       <AutoGen>True</AutoGen>

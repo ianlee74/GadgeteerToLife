@@ -18,6 +18,9 @@ namespace JoeTheGadgeteer {
         /// <summary>The Breakout module using socket 4 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.Breakout upperServos;
         
+        /// <summary>The Breakout module using socket 3 of the mainboard.</summary>
+        private Gadgeteer.Modules.GHIElectronics.Breakout lowerServos;
+        
         /// <summary>This property provides access to the Mainboard API. This is normally not necessary for an end user program.</summary>
         protected new static GHIElectronics.Gadgeteer.FEZCerberus Mainboard {
             get {
@@ -41,6 +44,7 @@ namespace JoeTheGadgeteer {
         
         private void InitializeModules() {
             this.upperServos = new GTM.GHIElectronics.Breakout(4);
+            this.lowerServos = new GTM.GHIElectronics.Breakout(3);
         }
     }
 }
