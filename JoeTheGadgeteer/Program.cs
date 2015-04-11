@@ -1,14 +1,15 @@
-﻿using System.Threading;
+﻿using Gadgeteer.SocketInterfaces;
 using Microsoft.SPOT;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
-using GTI = Gadgeteer.SocketInterfaces;
 
 namespace JoeTheGadgeteer
 {
     public partial class Program
     {
-        private GTI.DigitalOutput _heartPin;
+        private DigitalOutput _heartPin;
+        private PwmOutput _rightArmServoPwm;
+        private MovingBodyPart _rightArm;
 
         void ProgramStarted()
         {
@@ -19,12 +20,17 @@ namespace JoeTheGadgeteer
             // Start the heart beating.
             var heartState = false;
             var heartTimer = new GT.Timer(200);
-            heartTimer.Tick += (t) =>
+            heartTimer.Tick += t =>
             {
                 heartState = !heartState;
                 _heartPin.Write(heartState);
             };
             heartTimer.Start();
+
+            // Wave Joe's right arm.
+            _rightArmServoPwm = upperServos.CreatePwmOutput(GT.Socket.Pin.Nine);
+            _rightArm = new MovingBodyPart(_rightArmServoPwm, 0, 145, 0);
+            _rightArm.StartExercising();
         }
     }
 }
