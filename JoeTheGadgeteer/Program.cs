@@ -16,13 +16,13 @@ namespace JoeTheGadgeteer
 
             _heartPin = upperServos.CreateDigitalOutput(GT.Socket.Pin.Three, false);
 
-            var heartTimer = new GT.Timer(1000);
-            heartTimer.Tick += t =>
+            // Start the heart beating.
+            var heartState = false;
+            var heartTimer = new GT.Timer(200);
+            heartTimer.Tick += (t) =>
             {
-                // Blink the LED (heart).
-                _heartPin.Write(true);
-                Thread.Sleep(200);
-                _heartPin.Write(false);
+                heartState = !heartState;
+                _heartPin.Write(heartState);
             };
             heartTimer.Start();
         }
