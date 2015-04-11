@@ -27,6 +27,9 @@ namespace JoeTheGadgeteer {
         /// <summary>The ColorSense module using socket 5 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.ColorSense colorSensor;
         
+        /// <summary>The Distance US3 module using socket 7 of the mainboard.</summary>
+        private Gadgeteer.Modules.GHIElectronics.DistanceUS3 distanceSensor;
+        
         /// <summary>This property provides access to the Mainboard API. This is normally not necessary for an end user program.</summary>
         protected new static GHIElectronics.Gadgeteer.FEZCerberus Mainboard {
             get {
@@ -53,6 +56,7 @@ namespace JoeTheGadgeteer {
             this.lowerServos = new GTM.GHIElectronics.Breakout(3);
             this.temperatureHumidity = new GTM.GHIElectronics.TempHumidity(2);
             this.colorSensor = new GTM.GHIElectronics.ColorSense(5);
+            this.distanceSensor = new GTM.GHIElectronics.DistanceUS3(7);
         }
     }
 }

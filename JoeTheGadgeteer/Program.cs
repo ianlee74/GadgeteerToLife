@@ -15,9 +15,11 @@ namespace JoeTheGadgeteer
         private PwmOutput _rightLegServoPwm;
         private PwmOutput _leftLegServoPwm;
         private Human _joe;
+        private bool _isSlackingOff;
 
         private int _tempPos;
         private int _humidityPos;
+        private bool _isTakingTHMeasurements;
 
         private GT.Timer _colorSensorTimer;
 
@@ -35,22 +37,38 @@ namespace JoeTheGadgeteer
 
             // Create Joe and make him exercise all his body parts.
             _joe = new Human(_heartPin, _leftArmServoPwm, _rightArmServoPwm, _leftLegServoPwm, _rightLegServoPwm,
-                _headServoPwm);
+                _headServoPwm, distanceSensor);
             _joe.StandAtAttention();
 
             temperatureHumidity.MeasurementComplete += temperatureHumidity_MeasurementComplete;
 
-            DoWork();
+            StartScanningForBoss();
         }
 
         private void DoWork()
         {
-            temperatureHumidity.StartTakingMeasurements();
+            _isSlackingOff = false;
+            MonitorTemperatureAndHumidity();
             MonitorColor();
+        }
+
+        private void MonitorTemperatureAndHumidity()
+        {
+            temperatureHumidity.StartTakingMeasurements();
+            _isTakingTHMeasurements = true;
+        }
+
+        private void StopMonitoringTemperatureAndHumidty()
+        {
+            if (!_isTakingTHMeasurements) return;
+            temperatureHumidity.StopTakingMeasurements();
+            _isTakingTHMeasurements = false;
         }
 
         private void temperatureHumidity_MeasurementComplete(TempHumidity sender, TempHumidity.MeasurementCompleteEventArgs args)
         {
+            if (_isSlackingOff) return;
+
             Debug.Print("Temp = " + args.Temperature + "   Humidity = " + args.RelativeHumidity);
 
             // Show the temperature with the left arm.
@@ -71,6 +89,8 @@ namespace JoeTheGadgeteer
                 _colorSensorTimer = new GT.Timer(1000);
                 _colorSensorTimer.Tick += t =>
                 {
+                    if (_isSlackingOff) return;
+
                     // Take a color reading.
                     colorSensor.LedEnabled = true;
                     Thread.Sleep(200);
@@ -106,6 +126,41 @@ namespace JoeTheGadgeteer
                 };
             }
             if (!_colorSensorTimer.IsRunning) _colorSensorTimer.Start();
+        }
+
+        /// Visually scan the area for your boss and do work when you see him.
+        /// Otherwise, slack off.
+        /// </summary>
+        private void StartScanningForBoss()
+        {
+            _joe.VisualObjectLocated += (o, d) =>
+            {
+                Debug.Print("Visual object located (" + d + ")");
+                DoWork();
+            };
+            _joe.VisualObjectLost += (o, d) =>
+            {
+                Debug.Print("Visual object lost (" + d + ")");
+                SlackOff();
+            };
+            _joe.StartVisualObjectScan();
+        }
+
+        /// <summary>
+        /// Don't do the work your boss asked you to do.
+        /// </summary>
+        void SlackOff()
+        {
+            _isSlackingOff = true;
+
+            StopMonitoringTemperatureAndHumidty();
+
+            if (_colorSensorTimer != null && _colorSensorTimer.IsRunning)
+            {
+                _colorSensorTimer.Stop();
+            }
+            Thread.Sleep(1000);
+            _joe.StandAtAttention(true);
         }
     }
 }
