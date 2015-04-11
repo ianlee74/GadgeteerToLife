@@ -15,7 +15,10 @@ namespace JoeTheGadgeteer
         private PwmOutput _leftLegServoPwm;
         private Human _joe;
 
-        void ProgramStarted()
+        private int _tempPos;
+        private int _humidityPos;
+
+        private void ProgramStarted()
         {
             Debug.Print("Program Started");
 
@@ -28,13 +31,31 @@ namespace JoeTheGadgeteer
             _leftLegServoPwm = lowerServos.CreatePwmOutput(GT.Socket.Pin.Seven);
 
             // Create Joe and make him exercise all his body parts.
-            _joe = new Human(_heartPin, _leftArmServoPwm, _rightArmServoPwm, _leftLegServoPwm, _rightLegServoPwm, _headServoPwm);
+            _joe = new Human(_heartPin, _leftArmServoPwm, _rightArmServoPwm, _leftLegServoPwm, _rightLegServoPwm,
+                _headServoPwm);
             _joe.StandAtAttention();
-            _joe.RightArm.StartExercising();
-            _joe.LeftArm.StartExercising();
-            _joe.RightLeg.StartExercising();
-            _joe.LeftLeg.StartExercising();
-            _joe.Head.StartExercising();
+
+            temperatureHumidity.MeasurementComplete += temperatureHumidity_MeasurementComplete;
+
+            DoWork();
+        }
+
+        private void DoWork()
+        {
+            temperatureHumidity.StartTakingMeasurements();
+        }
+
+        private void temperatureHumidity_MeasurementComplete(TempHumidity sender, TempHumidity.MeasurementCompleteEventArgs args)
+        {
+            Debug.Print("Temp = " + args.Temperature + "   Humidity = " + args.RelativeHumidity);
+
+            // Show the temperature with the left arm.
+            _tempPos = _joe.LeftArm.MaxPosition - (int) ((args.Temperature/100)*(_joe.LeftArm.MaxPosition - _joe.LeftArm.MinPosition));
+            _joe.LeftArm.Move(_tempPos);
+
+            // Show the relative humidity with the right arm.
+            _humidityPos = _joe.RightArm.MinPosition + (int) ((args.RelativeHumidity/100)*(_joe.RightArm.MaxPosition - _joe.RightArm.MinPosition));
+            _joe.RightArm.Move(_humidityPos);
         }
     }
 }
