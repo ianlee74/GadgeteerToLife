@@ -29,7 +29,7 @@ namespace JoeTheGadgeteer
 
             // Wave Joe's right arm.
             _rightArmServoPwm = upperServos.CreatePwmOutput(GT.Socket.Pin.Nine);
-            _rightArm = new MovingBodyPart(_rightArmServoPwm, 0, 145, 0);
+            _rightArm = new MovingBodyPart(_rightArmServoPwm, 1, 145, 1);
             _rightArm.StartExercising();
         }
     }

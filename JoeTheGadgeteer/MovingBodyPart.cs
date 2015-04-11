@@ -80,7 +80,6 @@ namespace JoeTheGadgeteer
                     // Limit the max position.
                     if (position > MaxPosition)
                     {
-                        Debug.Print("Hit max position.");
                         _lastDirection = -1;
                         position = MaxPosition - moveIncrement;
                     }
@@ -88,13 +87,11 @@ namespace JoeTheGadgeteer
                     // Limit the lower position.
                     if (position < MinPosition)
                     {
-                        Debug.Print("Hit min position.");
                         _lastDirection = 1;
                         position = MinPosition + moveIncrement;
                     }
 
                     // Move a little every time the timer ticks.
-                    Debug.Print(position.ToString());
                     Move(position);
                     position += _lastDirection * moveIncrement;
                 };
